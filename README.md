@@ -127,6 +127,19 @@ one yourself in Settings. Let me know if I am missing your terminal.
 **"Muxley can't be opened"** — this happens on first launch because the app isn't notarized
 yet. Right-click the app, choose **Open**, then confirm. You only need to do this once.
 
+**A session on another machine never connects** — some routers mishandle the way SSH tags its
+traffic. The connection starts, goes quiet, then gives up. Test it from either machine:
+
+```bash
+ping -c 6 <other-machine>          # untagged
+ping -c 6 -z 184 <other-machine>   # tagged the way SSH tags its data
+```
+
+An average that jumps from a few milliseconds to hundreds points at this. Add the line
+`IPQoS none` to `/etc/ssh/sshd_config` on the machine you connect **to**. macOS starts a fresh
+`sshd` for each connection, so it works straight away. To cure it properly, look for WMM, QoS,
+or media prioritisation in your router settings.
+
 ---
 
 ## Feedback
